@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07080c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ALLADINN">
+<title>ALLADINN</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="stage" aria-hidden="true"><div class="glow g1"></div><div class="glow g2"></div><div class="floor"></div></div>
+<div class="app">
+  <header class="top">
+    <div class="brand"><b>ALLADINN</b><small>Signal desk</small></div>
+    <div class="top-meta"><a class="pill" href="ALLADINN.zip" download="ALLADINN.zip">Download zip</a><span id="conn" class="pill">LINKING</span><time id="clock">UTC --:--:--</time></div>
+  </header>
+
+  <section id="view-chart" class="view on">
+    <div class="glass hero">
+      <div class="hero-row">
+        <button id="symBtn" class="symbtn" type="button"><span id="symName">Bitcoin</span><small id="symId">BTCUSDT</small></button>
+        <div><div id="last" class="px">—</div><div id="chg" class="chg">—</div></div>
+        <span id="biasPill" class="pill">Bias —</span>
+      </div>
+      <div class="tfbar" id="tfbar"></div>
+      <div class="chartwrap">
+        <canvas id="cv"></canvas>
+        <div id="legend" class="legend"></div>
+      </div>
+      <div class="charttools">
+        <button id="zin" class="tool" type="button">+</button>
+        <button id="zout" class="tool" type="button">−</button>
+        <button id="zreset" class="tool" type="button">Reset</button>
+        <button id="xhair" class="tool on" type="button">Crosshair</button>
+      </div>
+    </div>
+    <article class="glass prism" id="prism"></article>
+    <button id="stratBtn" class="stratbtn glass" type="button"><span><b id="stratName">Macro desk</b><small id="stratSub">Strict clearance</small></span><b>Change</b></button>
+  </section>
+
+  <section id="view-signals" class="view">
+    <div class="glass panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <h2>Radar</h2>
+        <button id="scan" class="tool" type="button">Scan book</button>
+      </div>
+      <p class="mut">Same strategy and timeframe as the chart. Macro rows are either cleared or the first reason they were dropped.</p>
+      <div id="radar"></div>
+    </div>
+  </section>
+
+  <section id="view-macro" class="view">
+    <div class="glass panel">
+      <h2>Macro gate</h2>
+      <p class="mut">A signal is printed only if every hard gate passes and one rule still clears the replay, the regime, and the score floor. Everything else is dropped on purpose.</p>
+      <div id="gates" class="gates"></div>
+      <h2 style="margin-top:16px">Why it dropped</h2>
+      <div id="drops"></div>
+    </div>
+  </section>
+
+  <section id="view-risk" class="view">
+    <div class="glass panel">
+      <h2>Paper book</h2>
+      <div class="grid2">
+        <div class="stat"><small>Equity</small><b id="eqb">$100,000</b></div>
+        <div class="stat"><small>Net</small><b id="netb">$0</b></div>
+        <div class="stat"><small>Open risk</small><b id="riskb">$0</b></div>
+        <div class="stat"><small>Win rate</small><b id="winb">—</b></div>
+      </div>
+      <canvas id="eq"></canvas>
+      <label>Risk per trade (%)</label>
+      <input id="riskPct" type="number" min="0.1" max="2" step="0.1" value="0.5">
+      <label>Daily loss stop (% of equity, realized)</label>
+      <input id="dayLoss" type="number" min="0.5" max="10" step="0.5" value="2">
+      <p class="mut" id="sizeNote"></p>
+      <div id="positions"></div>
+      <button id="resetBook" class="ghostbtn" type="button" style="margin-top:8px">Reset paper to $100,000</button>
+    </div>
+  </section>
+
+  <section id="view-book" class="view book">
+    <div class="glass panel">
+      <h2>Strategy book</h2>
+      <p class="mut">Structure, ICT, and estimated orderflow from the Newman desk. Macro is the only book that must clear the Aladdin-style gates.</p>
+      <div id="book"></div>
+    </div>
+  </section>
+</div>
+
+<nav id="nav">
+  <button type="button" data-tab="chart" class="on"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/></svg>Chart</button>
+  <button type="button" data-tab="signals"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Radar</button>
+  <button type="button" data-tab="macro"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v6c0 5-3.5 7.5-8 8-4.5-.5-8-3-8-8V7z"/></svg>Macro</button>
+  <button type="button" data-tab="risk"><svg viewBox="0 0 24 24"><path d="M4 18V6M8 18v-6M12 18V9M16 18v-3M20 18V4"/></svg>Risk</button>
+  <button type="button" data-tab="book"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 014 4v12H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/></svg>Book</button>
+</nav>
+
+<dialog id="symDlg"><h3>Market <button class="x" type="button" id="symX">✕</button></h3><div id="symList" class="slist"></div></dialog>
+<dialog id="stDlg"><h3>Strategy <button class="x" type="button" id="stX">✕</button></h3><div id="stList" class="slist"></div></dialog>
+<div id="toast"></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
